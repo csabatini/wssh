@@ -3,4 +3,4 @@
 if __name__ == '__main__':
     from wssh import client
 
-    client.invoke_shell('ws://localhost:5000/remote?key=secret')
+    client.invoke_shell('wss://localhost:8443/remote')

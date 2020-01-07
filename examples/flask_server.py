@@ -55,12 +55,12 @@ if __name__ == '__main__':
     from geventwebsocket.handler import WebSocketHandler
 
     app.debug = True
-    http_server = WSGIServer(('0.0.0.0', 8080), app,
+    http_server = WSGIServer(('0.0.0.0', 8443), app,
         log=None,
         handler_class=WebSocketHandler,
         keyfile='server.key',
         certfile='server.crt')
-    print 'Server running on wss://0.0.0.0:8080/remote'
+    print 'Server running on wss://0.0.0.0:8443/remote'
     try:
         http_server.serve_forever()
     except KeyboardInterrupt:
