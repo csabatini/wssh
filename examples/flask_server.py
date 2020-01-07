@@ -19,8 +19,8 @@ def index():
         raise BadRequest()
 
     # Here you can perform authentication and sanity checks
-    if request.args.get('key') != 'secret':
-        raise Unauthorized
+    #if request.args.get('key') != 'secret':
+    #    raise Unauthorized
 
     # Initiate a WSSH Bridge and connect to a remote SSH server
     bridge = wssh.WSSHBridge(request.environ['wsgi.websocket'])
@@ -55,10 +55,12 @@ if __name__ == '__main__':
     from geventwebsocket.handler import WebSocketHandler
 
     app.debug = True
-    http_server = WSGIServer(('localhost', 5000), app,
+    http_server = WSGIServer(('0.0.0.0', 8080), app,
         log=None,
-        handler_class=WebSocketHandler)
-    print 'Server running on ws://localhost:5000/remote'
+        handler_class=WebSocketHandler,
+        keyfile='server.key',
+        certfile='server.crt')
+    print 'Server running on wss://0.0.0.0:8080/remote'
     try:
         http_server.serve_forever()
     except KeyboardInterrupt:

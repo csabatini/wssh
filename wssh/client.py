@@ -1,4 +1,5 @@
 import os
+import ssl
 import sys
 import signal
 import errno
@@ -42,7 +43,7 @@ def _resize(ws):
 
 
 def invoke_shell(endpoint):
-    ssh = websocket.create_connection(endpoint)
+    ssh = websocket.create_connection(endpoint, sslopt={"cert_reqs": ssl.CERT_NONE})
     _resize(ssh)
     oldtty = termios.tcgetattr(sys.stdin)
     old_handler = signal.getsignal(signal.SIGWINCH)
