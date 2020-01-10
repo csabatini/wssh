@@ -17,6 +17,8 @@ from paramiko.dsskey import DSSKey
 from paramiko.rsakey import RSAKey
 from paramiko.ssh_exception import SSHException
 
+from base64 import b64encode, b64decode
+
 import socket
 
 try:
@@ -112,7 +114,7 @@ class WSSHBridge(object):
                 data = self._websocket.receive()
                 if not data:
                     return
-                data = json.loads(str(data))
+                data = json.loads(b64decode(str(data)))
                 if 'resize' in data:
                     channel.resize_pty(
                         data['resize'].get('width', 80),
@@ -130,7 +132,7 @@ class WSSHBridge(object):
                 data = channel.recv(1024)
                 if not len(data):
                     return
-                self._websocket.send(json.dumps({'data': data}))
+                self._websocket.send(b64encode(json.dumps({'data': data})))
         finally:
             self.close()
 

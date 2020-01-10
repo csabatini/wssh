@@ -14,6 +14,8 @@ import struct
 
 import platform
 
+from base64 import b64encode, b64decode
+
 try:
     import simplejson as json
 except ImportError:
@@ -39,7 +41,7 @@ def _pty_size():
 
 def _resize(ws):
     rows, cols = _pty_size()
-    ws.send(json.dumps({'resize': {'width': cols, 'height': rows}}))
+    ws.send(b64encode(json.dumps({'resize': {'width': cols, 'height': rows}})))
 
 
 def invoke_shell(endpoint):
@@ -57,7 +59,7 @@ def invoke_shell(endpoint):
         tty.setcbreak(sys.stdin.fileno())
 
         rows, cols = _pty_size()
-        ssh.send(json.dumps({'resize': {'width': cols, 'height': rows}}))
+        ssh.send(b64encode(json.dumps({'resize': {'width': cols, 'height': rows}})))
 
         while True:
             try:
@@ -66,7 +68,7 @@ def invoke_shell(endpoint):
                     data = ssh.recv()
                     if not data:
                         break
-                    message = json.loads(data)
+                    message = json.loads(b64decode(data))
                     if 'error' in message:
                         raise ConnectionError(message['error'])
                     sys.stdout.write(message['data'])
@@ -75,7 +77,7 @@ def invoke_shell(endpoint):
                     x = sys.stdin.read(1)
                     if len(x) == 0:
                         break
-                    ssh.send(json.dumps({'data': x}))
+                    ssh.send(b64encode(json.dumps({'data': x})))
             except (select.error, IOError) as e:
                 if e.args and e.args[0] == errno.EINTR:
                     pass
